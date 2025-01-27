@@ -1,0 +1,155 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRATAX Clicker Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('LOGO_PRUHLEDNE.png') no-repeat center top / contain, #f0f9e8;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #game {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .leaf {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: url('Snímek_obrazovky_2025-01-27_172546.png') no-repeat center / contain;
+            cursor: pointer;
+        }
+
+        #scoreboard {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #4c8056;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        #timer {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #4c8056;
+        }
+
+        #end-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            text-align: center;
+            padding-top: 30%;
+            font-size: 24px;
+        }
+
+        #end-screen button {
+            background: #4c8056;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 20px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        #end-screen button:hover {
+            background: #3a6244;
+        }
+    </style>
+</head>
+<body>
+    <div id="game">
+        <div id="scoreboard">Score: 0</div>
+        <div id="timer">Time: 30</div>
+        <div id="end-screen">
+            <div id="final-score"></div>
+            <button onclick="restartGame()">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        const gameArea = document.getElementById('game');
+        const scoreboard = document.getElementById('scoreboard');
+        const timerDisplay = document.getElementById('timer');
+        const endScreen = document.getElementById('end-screen');
+        const finalScore = document.getElementById('final-score');
+
+        let score = 0;
+        let timeLeft = 30;
+        let gameInterval;
+        let timerInterval;
+
+        function startGame() {
+            score = 0;
+            timeLeft = 30;
+            scoreboard.innerText = "Score: " + score;
+            timerDisplay.innerText = "Time: " + timeLeft;
+            endScreen.style.display = 'none';
+
+            gameInterval = setInterval(spawnLeaf, 1000);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = "Time: " + timeLeft;
+                if (timeLeft <= 0) endGame();
+            }, 1000);
+        }
+
+        function spawnLeaf() {
+            const leaf = document.createElement('div');
+            leaf.classList.add('leaf');
+            const x = Math.random() * (gameArea.clientWidth - 50);
+            const y = Math.random() * (gameArea.clientHeight - 50);
+            leaf.style.left = x + 'px';
+            leaf.style.top = y + 'px';
+            leaf.addEventListener('click', () => {
+                score++;
+                scoreboard.innerText = "Score: " + score;
+                leaf.remove();
+            });
+
+            gameArea.appendChild(leaf);
+
+            setTimeout(() => {
+                if (leaf.parentElement) leaf.remove();
+            }, 2000);
+        }
+
+        function endGame() {
+            clearInterval(gameInterval);
+            clearInterval(timerInterval);
+            endScreen.style.display = 'block';
+            finalScore.innerText = "Final Score: " + score;
+        }
+
+        function restartGame() {
+            const leaves = document.querySelectorAll('.leaf');
+            leaves.forEach(leaf => leaf.remove());
+            startGame();
+        }
+
+        startGame();
+    </script>
+</body>
+</html>
